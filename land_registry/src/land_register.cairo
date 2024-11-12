@@ -28,7 +28,7 @@ pub mod LandRegistryContract {
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         LandRegistered: LandRegistered,
         LandTransferred: LandTransferred,
         LandVerified: LandVerified,
@@ -39,7 +39,7 @@ pub mod LandRegistryContract {
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LandRegistered {
+    pub struct LandRegistered {
         land_id: u256,
         owner: ContractAddress,
         location: Location,
@@ -48,37 +48,37 @@ pub mod LandRegistryContract {
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LandTransferred {
+    pub struct LandTransferred {
         land_id: u256,
         from_owner: ContractAddress,
         to_owner: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LandVerified {
+    pub struct LandVerified {
         land_id: u256,
     }
 
     #[derive(Drop, Copy, starknet::Event)]
-    struct LandUpdated {
+    pub struct LandUpdated {
         land_id: u256,
         land_use: Option<felt252>,
         area: u256
     }
 
     #[derive(Drop, Copy, starknet::Event)]
-    struct LandInspectorSet {
+    pub struct LandInspectorSet {
         land_id: u256,
         inspector: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct InspectorAdded {
+    pub struct InspectorAdded {
         inspector: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct InspectorRemoved {
+    pub struct InspectorRemoved {
         inspector: ContractAddress,
     }
 
