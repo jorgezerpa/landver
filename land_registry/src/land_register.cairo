@@ -1,7 +1,9 @@
 #[starknet::contract]
 pub mod LandRegistryContract {
     use starknet::SyscallResultTrait;
-use starknet::{get_caller_address, get_contract_address, get_block_timestamp, ContractAddress, syscalls};
+    use starknet::{
+        get_caller_address, get_contract_address, get_block_timestamp, ContractAddress, syscalls
+    };
     use land_registry::interface::{ILandRegistry, Land, LandUse, Location, LandStatus};
     use land_registry::land_nft::{ILandNFTDispatcher, ILandNFTDispatcherTrait, LandNFT};
     use land_registry::utils::utils::{create_land_id, LandUseIntoOptionFelt252};
@@ -84,13 +86,18 @@ use starknet::{get_caller_address, get_contract_address, get_block_timestamp, Co
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, nft_contract_class_hash: starknet::class_hash::ClassHash) {
+    fn constructor(
+        ref self: ContractState, nft_contract_class_hash: starknet::class_hash::ClassHash
+    ) {
         self.inspector_count.write(0);
 
         let land_register_contract_address = get_contract_address();
         let mut call_data = ArrayTrait::<felt252>::new();
         call_data.append(land_register_contract_address.try_into().unwrap());
-        let (nft_contract_address, _) = syscalls::deploy_syscall(nft_contract_class_hash, 0, call_data.span(), true).unwrap_syscall();
+        let (nft_contract_address, _) = syscalls::deploy_syscall(
+            nft_contract_class_hash, 0, call_data.span(), true
+        )
+            .unwrap_syscall();
 
         self.nft_contract.write(nft_contract_address);
     }

@@ -1,19 +1,15 @@
-// This Tests cover the full flow from land registration to NFT minting and transfer and Edge cases. 
+// This Tests cover the full flow from land registration to NFT minting and transfer and Edge cases.
 // TO DO -> circular dependencies between land and nft contract
 use snforge_std::{
     declare, ContractClassTrait, DeclareResultTrait, start_cheat_caller_address,
-    stop_cheat_caller_address, start_cheat_block_timestamp, stop_cheat_block_timestamp,
-    spy_events, EventSpyAssertionsTrait
+    stop_cheat_caller_address, start_cheat_block_timestamp, stop_cheat_block_timestamp, spy_events,
+    EventSpyAssertionsTrait
 };
 use starknet::ContractAddress;
 use land_registry::interface::{ILandRegistryDispatcher, ILandRegistryDispatcherTrait};
 use land_registry::interface::{LandUse, Location, LandStatus};
 
-use land_registry::land_register::LandRegistryContract::{
-    Event,
-    LandVerified,
-    LandTransferred,
-};
+use land_registry::land_register::LandRegistryContract::{Event, LandVerified, LandTransferred,};
 
 pub mod Accounts {
     use starknet::ContractAddress;
@@ -93,13 +89,12 @@ fn test_register_multiple_lands() {
     land_register_dispatcher.register_land(location_1, area_1, land_use_1);
     land_register_dispatcher.register_land(location_2, area_2, land_use_2);
     land_register_dispatcher.register_land(location_3, area_3, land_use_3);
-    
+
     let land_ids = land_register_dispatcher.get_lands_by_owner(owner);
 
     let land_1 = land_register_dispatcher.get_land(*land_ids.at(0));
     let land_2 = land_register_dispatcher.get_land(*land_ids.at(1));
     let land_3 = land_register_dispatcher.get_land(*land_ids.at(2));
-
 
     // Assert land 1
     assert!(land_1.owner == owner, "Wrong owner");
@@ -111,7 +106,7 @@ fn test_register_multiple_lands() {
         _ => panic!("Must be Pending"),
     }
     assert!(land_1.inspector == 0.try_into().unwrap(), "Should have no inspector");
-    
+
     // Assert land 2
     assert!(land_2.owner == owner, "Wrong owner");
     assert!(land_2.location == location_2, "Wrong location");
@@ -137,6 +132,8 @@ fn test_register_multiple_lands() {
 
 #[test]
 fn test_register_and_approve() {
+    let mut spy = spy_events();
+
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
 
@@ -151,25 +148,14 @@ fn test_register_and_approve() {
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
     stop_cheat_caller_address(contract_address);
-    
- 
-    let mut spy = spy_events();
+
     // approve land
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
 
     spy
         .assert_emitted(
-            @array![
-                (
-                    contract_address,
-                    Event::LandVerified(
-                        LandVerified {
-                            land_id,
-                        }
-                    )
-                )
-            ]
+            @array![(contract_address, Event::LandVerified(LandVerified { land_id, })),]
         );
 }
 
@@ -190,30 +176,26 @@ fn test_register_approve_and_transfer() {
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
     stop_cheat_caller_address(contract_address);
-    
+
     // approve land
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
     stop_cheat_caller_address(contract_address);
-    
+
     let mut spy = spy_events();
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
     start_cheat_caller_address(contract_address, owner);
     land_register_dispatcher.transfer_land(land_id, new_owner);
-    
+
     spy
         .assert_emitted(
             @array![
                 (
                     contract_address,
                     Event::LandTransferred(
-                        LandTransferred {
-                            land_id,
-                            from_owner: owner, 
-                            to_owner: new_owner
-                        }
+                        LandTransferred { land_id, from_owner: owner, to_owner: new_owner }
                     )
                 )
             ]
@@ -236,8 +218,8 @@ fn test_register_update_approve_and_transfer() {
     start_cheat_caller_address(contract_address, owner);
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
-    
-    // update land 
+
+    // update land
     let new_area: u256 = 1000;
     let new_land_use = LandUse::Residential;
     land_register_dispatcher.update_land(land_id, new_area, new_land_use);
@@ -248,25 +230,21 @@ fn test_register_update_approve_and_transfer() {
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
     stop_cheat_caller_address(contract_address);
-    
+
     let mut spy = spy_events();
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
     start_cheat_caller_address(contract_address, owner);
     land_register_dispatcher.transfer_land(land_id, new_owner);
-    
+
     spy
         .assert_emitted(
             @array![
                 (
                     contract_address,
                     Event::LandTransferred(
-                        LandTransferred {
-                            land_id,
-                            from_owner: owner, 
-                            to_owner: new_owner
-                        }
+                        LandTransferred { land_id, from_owner: owner, to_owner: new_owner }
                     )
                 )
             ]
@@ -290,37 +268,33 @@ fn test_register_approve_update_and_transfer() {
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
     stop_cheat_caller_address(contract_address);
-    
+
     // approve land
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
     stop_cheat_caller_address(contract_address);
 
-    // update land 
+    // update land
     start_cheat_caller_address(contract_address, owner);
     let new_area: u256 = 1000;
     let new_land_use = LandUse::Residential;
     land_register_dispatcher.update_land(land_id, new_area, new_land_use);
     stop_cheat_caller_address(contract_address);
-    
+
     let mut spy = spy_events();
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
     start_cheat_caller_address(contract_address, owner);
     land_register_dispatcher.transfer_land(land_id, new_owner);
-    
+
     spy
         .assert_emitted(
             @array![
                 (
                     contract_address,
                     Event::LandTransferred(
-                        LandTransferred {
-                            land_id,
-                            from_owner: owner, 
-                            to_owner: new_owner
-                        }
+                        LandTransferred { land_id, from_owner: owner, to_owner: new_owner }
                     )
                 )
             ]
@@ -344,22 +318,22 @@ fn test_register_approve_transfer_and_update_by_new_owner() {
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
     stop_cheat_caller_address(contract_address);
-    
+
     // approve land
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
     stop_cheat_caller_address(contract_address);
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
     start_cheat_caller_address(contract_address, owner);
     land_register_dispatcher.transfer_land(land_id, new_owner);
 
-    // update land 
+    // update land
     start_cheat_caller_address(contract_address, new_owner);
     let new_area: u256 = 2000;
     let new_land_use = LandUse::Commercial;
-    land_register_dispatcher.update_land(land_id, new_area, new_land_use);    
+    land_register_dispatcher.update_land(land_id, new_area, new_land_use);
 }
 
 #[test]
@@ -377,14 +351,14 @@ fn try_to_transfer_before_approve() {
     // register and add inspector
     start_cheat_caller_address(contract_address, owner);
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
-    land_register_dispatcher.transfer_land(land_id, new_owner); 
+    land_register_dispatcher.transfer_land(land_id, new_owner);
 }
 
 #[test]
-#[should_panic()]
+#[should_panic(expected: ('Only owner can update land',))]
 fn previous_owner_tries_to_update_after_transfer_should_fail() {
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
@@ -401,12 +375,12 @@ fn previous_owner_tries_to_update_after_transfer_should_fail() {
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     land_register_dispatcher.set_land_inspector(land_id, inspector);
     stop_cheat_caller_address(contract_address);
-    
+
     // approve land
     start_cheat_caller_address(contract_address, inspector);
     land_register_dispatcher.approve_land(land_id);
     stop_cheat_caller_address(contract_address);
-    
+
     // transfer land
     let new_owner = Accounts::ADDR3();
     start_cheat_caller_address(contract_address, owner);
@@ -415,10 +389,8 @@ fn previous_owner_tries_to_update_after_transfer_should_fail() {
     // update land
     let new_area: u256 = 2000;
     let new_land_use = LandUse::Commercial;
-    land_register_dispatcher.update_land(land_id, new_area, new_land_use);    
+    land_register_dispatcher.update_land(land_id, new_area, new_land_use);
 }
-
-
 
 #[test]
 #[should_panic(expected: ('Only inspector can approve',))]
@@ -437,14 +409,14 @@ fn test_no_inspector_tries_to_approve_should_fail() {
     start_cheat_caller_address(contract_address, owner);
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
     stop_cheat_caller_address(contract_address);
-    
+
     // no inspector tries to approve land
     start_cheat_caller_address(contract_address, no_inspector);
     land_register_dispatcher.approve_land(land_id);
 }
 
 #[test]
-#[should_panic()]
+#[should_panic(expected: ('Only inspector can approve',))]
 fn test_try_to_approve_a_not_existant_land_should_fail() {
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
@@ -455,7 +427,7 @@ fn test_try_to_approve_a_not_existant_land_should_fail() {
 }
 
 #[test]
-#[should_panic()]
+#[should_panic]
 fn test_try_to_transfer_a_not_existant_land_should_fail() {
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
@@ -466,18 +438,18 @@ fn test_try_to_transfer_a_not_existant_land_should_fail() {
 }
 
 #[test]
-#[should_panic()]
+#[should_panic(expected: ('Only owner can update land',))]
 fn test_try_to_update_a_not_existant_land_should_fail() {
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
-    
+
     // // Set up test data
     let owner = Accounts::ADDR1();
     let not_owner = Accounts::ADDR2();
     let location: Location = Location { latitude: 1, longitude: 2 };
     let area: u256 = 1000;
     let land_use = LandUse::Residential;
-    
+
     // register and add inspector
     start_cheat_caller_address(contract_address, owner);
     let land_id = land_register_dispatcher.register_land(location, area, land_use);
