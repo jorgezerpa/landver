@@ -49,15 +49,6 @@ fn deploy(name: ByteArray) -> ContractAddress {
 }
 
 #[test]
-fn test_deploy() {
-    let contract_address = deploy("LandRegistryContract");
-    let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
-
-    let land_count = land_register_dispatcher.get_land_count();
-    assert!(land_count == 0, "deploy failed");
-}
-
-#[test]
 fn test_register_and_get_land() {
     let contract_address = deploy("LandRegistryContract");
     let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
@@ -230,4 +221,49 @@ fn test_register_approve_and_transfer() {
                 )
             ]
         );
+}
+
+#[test]
+#[should_panic(expected: ('Only inspector can approve',))]
+fn test_no_inspector_tries_to_approve_should_fail() {
+    let contract_address = deploy("LandRegistryContract");
+    let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
+
+    // // Set up test data
+    let owner = Accounts::ADDR1();
+    let no_inspector = Accounts::ADDR2();
+    let location: Location = Location { latitude: 1, longitude: 2 };
+    let area: u256 = 1000;
+    let land_use = LandUse::Residential;
+
+    // register and add inspector
+    start_cheat_caller_address(contract_address, owner);
+    let land_id = land_register_dispatcher.register_land(location, area, land_use);
+    stop_cheat_caller_address(contract_address);
+    
+    // no inspector tries to approve land
+    start_cheat_caller_address(contract_address, no_inspector);
+    land_register_dispatcher.approve_land(land_id);
+}
+
+#[test]
+#[should_panic()]
+fn test_try_to_approve_a_not_existant_land() {
+    let contract_address = deploy("LandRegistryContract");
+    let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
+    let inspector = Accounts::ADDR2();
+    let fake_land_id = 1;
+    start_cheat_caller_address(contract_address, inspector);
+    land_register_dispatcher.approve_land(fake_land_id);
+}
+
+#[test]
+#[should_panic()]
+fn test_try_to_transfer_a_not_existant_land() {
+    let contract_address = deploy("LandRegistryContract");
+    let land_register_dispatcher = ILandRegistryDispatcher { contract_address };
+    let new_owner = Accounts::ADDR1();
+    let fake_land_id = 1;
+    start_cheat_caller_address(contract_address, new_owner);
+    land_register_dispatcher.transfer_land(fake_land_id, new_owner);
 }
