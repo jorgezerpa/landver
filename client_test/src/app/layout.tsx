@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./Providers";
-import Image from "next/image";
+import { Sidebar } from "./components/Sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,28 +32,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex justify-center items-center h-screen w-screen">
-            <div className="bg-white min-w-[290px] w-1/5 h-full hidden lg:block px-5 py-7">
-              <Image alt="Landver" src={"/logo-and-name.svg"} height={38} width={157} /> 
-              <div className="flex flex-col gap-10 pt-10">
-                {
-                  [
-                    { name:"Dashboard", iconDisabled:"dashboard-selected.svg" },
-                    { name:"Verify Land", iconDisabled:"shared.svg" },
-                    { name:"Verify User", iconDisabled:"shared.svg" },
-                    { name:"Transfer Ownership", iconDisabled:"shared.svg" },
-                    { name:"Reports and Logs", iconDisabled:"shared.svg" },
-                    { name:"Notifications", iconDisabled:"shared.svg" },
-                  ].map((item, index)=>{
-                    return (
-                      <div className="flex items-center gap-2">
-                        <Image alt="Landver" src={`/icons/sidebar/${item.iconDisabled}`} height={26} width={26} /> 
-                        <p className="text-[#7E8299] text-lg">{ item.name }</p>
-                      </div>
-                    )
-                  })
-                }
-              </div>
-            </div>
+            <Sidebar />
             <div className="flex-1 h-full bg-gray-100">
               {children}
             </div>
