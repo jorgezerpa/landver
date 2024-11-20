@@ -1,6 +1,5 @@
 'use client'
 import { useState } from "react";
-// import Image from "next/image";
 import type { Connector } from "@starknet-react/core";
 import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction } from "@starknet-react/core";
 
