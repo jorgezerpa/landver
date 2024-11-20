@@ -44,13 +44,13 @@ export const Sidebar = () => {
   const [hoveredItem, setHoveredItem] = useState<null|number>(null)
 
   return (
-    <div className="bg-white min-w-[290px] w-1/5 h-full hidden lg:block px-5 py-7">
+    <div className="bg-white min-w-[290px] w-1/5 h-full hidden lg:block px-5 py-7" style={{ boxShadow:"1px 0px 2px rgba(0, 0, 0, 0.1)", zIndex:1000 }}>
       <Image className="cursor-pointer" alt="Landver" src={"/logo-and-name.svg"} height={38} width={157} /> 
       <div className="flex flex-col pt-10 gap-6">
         {
           OPTIONS["client"].map((item, index)=>{
             return (
-              <div onClick={()=>router.push(item.path)} onMouseOver={()=>setHoveredItem(index)} onMouseLeave={()=>setHoveredItem(null)} className={`rounded-md flex items-center gap-2 cursor-pointer hover:scale-95 transition-all ${pathname.includes(item.path)?"bg-[#F0EFFC]":""} py-4 px-2`}>
+              <div key={"sidebar-desktop-id"+index} onClick={()=>router.push(item.path)} onMouseOver={()=>setHoveredItem(index)} onMouseLeave={()=>setHoveredItem(null)} className={`rounded-md flex items-center gap-2 cursor-pointer hover:scale-95 transition-all ${pathname.includes(item.path)?"bg-[#F0EFFC]":""} py-4 px-2`}>
                 {
                     (pathname.includes(item.path) || hoveredItem===index)
                     ? <Image alt="Landver" src={`/icons/sidebar/${item.iconEnabled}`} height={26} width={26} /> 
