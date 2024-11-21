@@ -21,7 +21,6 @@ export default function Home() {
   const { connectors, connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { address, status, account,isConnected , connector } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
- console.log(connector)
   const [showModal, setShowModal] = useState(false)
 
   async function connect(connector: Connector) {
