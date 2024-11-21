@@ -1,15 +1,40 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction } from "@starknet-react/core";
+import type { Connector } from "@starknet-react/core";
 
+
+const walletIdToName = new Map([
+  ["argentX", "Argent X"],
+  ["braavos", "Braavos"],
+  ["argentWebWallet", "Web Wallet"],
+  ["argentMobile", "Argent mobile"],
+]);
  
 export function Providers({ children }: { children: React.ReactNode }) {
 
-  const { connectors, connectAsync } = useConnect();
+  const { connectors, connectAsync } = useConnect({  });
+  console.log(connectors)
   const { disconnectAsync } = useDisconnect();
   const { address, status, account,isConnected , connector } = useAccount();
 
   const [currentModal, setCurrentModal] = useState<"intro"|"connect">("intro")
+
+  async function connect(connector: Connector) {
+    try {
+      await connectAsync({ connector });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function disconnect() {
+    try {
+      await disconnectAsync();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div>
@@ -38,27 +63,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
               <div className="bg-white rounded-lg py-6 max-w-[630px] w-full">
                 <p className="text-center text-xl font-semibold mb-7">Connect Wallet</p>
                 <div className="w-[93%] mx-auto flex flex-col gap-3">
-                  <div className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
-                    <div>
-                      <p className="text-base text-center font-medium">Web Wallet</p>
-                      <p className="text-base text-center ">Powered by Agent</p>
-                    </div>
-                  </div>
-                  <div className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
-                    <div>
-                      <p className="text-base text-center font-medium">Argent X</p>
-                    </div>
-                  </div>
-                  <div className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
-                    <div>
-                      <p className="text-base text-center font-medium">Argent Mobile</p>
-                    </div>
-                  </div>
-                  <div className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
-                    <div>
-                      <p className="text-base text-center font-medium">Braavos</p>
-                    </div>
-                  </div>
+                  {connectors.map((connector, index) => {
+                    const isArgentMobile = connector.id === "argentMobile";
+                    return (
+                      <div key={connector.id+"connectwalletmodal"+index} onClick={() => connect(connector)} className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
+                        <div>
+                          <p className="text-base text-center font-medium">{walletIdToName.get(connector.id) ?? connector.name}</p>
+                          {/* <p className="text-base text-center ">Powered by Agent</p> */}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
