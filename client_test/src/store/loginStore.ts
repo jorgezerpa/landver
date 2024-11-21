@@ -6,7 +6,7 @@ interface LoginState {
 }
 
 const useLoginStore = create<LoginState>()((set) => ({
-    userType:null,
+    userType:"client",
     setUserType: (value:"owner"|"inspector"|"client") => {
         set({ userType:value })
     }

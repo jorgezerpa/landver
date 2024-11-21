@@ -14,9 +14,9 @@ const walletIdToName = new Map([
 export function Providers({ children }: { children: React.ReactNode }) {
 
   const { connectors, connectAsync } = useConnect({  });
-  console.log(connectors)
-  const { disconnectAsync } = useDisconnect();
   const { address, status, account,isConnected , connector } = useAccount();
+
+  const [connecting, setConnecting] = useState(true)
 
   const [currentModal, setCurrentModal] = useState<"intro"|"connect">("intro")
 
@@ -28,18 +28,39 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function disconnect() {
-    try {
-      await disconnectAsync();
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    (async()=>{
+      if (status === "disconnected") {
+        const localStorage = window.localStorage;
+        if(localStorage.getItem("landver-connector")) {
+          const selectedConnector = connectors.find(con => con.id === localStorage.getItem("landver-connector"))
+          selectedConnector && await connect(selectedConnector)
+        }
+        setConnecting(false)
+      } else if (status === "connected") {
+        setConnecting(false)
+      }
+    })()
+  }, [address, status])
+
+  // set connector used in LS to try to reconnect if user refresh screen or logs again (it's a kind of remember me)
+  useEffect(()=>{
+    if(connector?.id){
+      const localStorage = window.localStorage;
+      localStorage.setItem("landver-connector", connector.id)
     }
-  }
+  }, [connector])
+
 
   return (
     <div>
-      { !!address && children }
-      { !address && (
+      {
+        connecting && (
+          <div>loading</div>
+        )
+      }
+      { (!connecting&&!!address) && children }
+      { (!connecting&&!address) && (
         <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-40 flex justify-center items-center" style={{ zIndex:1000 }}>
       
           {

@@ -62,7 +62,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 
   useEffect(()=>{
-    setTimeout(()=>loginStore.setUserType("client"), 0)
+    // setTimeout(()=>loginStore.setUserType("client"), 0)
+    loginStore.setUserType("client")
   }, [])
  
   return (

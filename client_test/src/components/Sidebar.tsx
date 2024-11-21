@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { Connector } from "@starknet-react/core";
-import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction, useNonceForAddress } from "@starknet-react/core";
+import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction, useNonceForAddress, useStarkProfile } from "@starknet-react/core";
 
 import { useRouter, usePathname } from "next/navigation";
 import { useLoginStore } from "@/store/loginStore";
+
 
 const OPTIONS = {
     owner: [
@@ -35,14 +36,15 @@ const OPTIONS = {
 }
 
 
+
 export const Sidebar = () => {
   const loginStore = useLoginStore()
 
   const router = useRouter()
   const pathname = usePathname()
 
-  const { address, status, account} = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
-    
+  const { address, status, account } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
+
   const [hoveredItem, setHoveredItem] = useState<null|number>(null)
 
   return (
