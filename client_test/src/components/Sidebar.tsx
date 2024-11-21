@@ -45,7 +45,7 @@ export const Sidebar = () => {
 
   return (
     <div className="bg-white min-w-[290px] w-1/5 h-full hidden lg:block px-5 py-7" style={{ boxShadow:"1px 0px 2px rgba(0, 0, 0, 0.1)", zIndex:1000 }}>
-      <Image className="cursor-pointer" alt="Landver" src={"/logo-and-name.svg"} height={38} width={157} /> 
+      <Image onClick={()=>router.push("/")} className="cursor-pointer" alt="Landver" src={"/logo-and-name.svg"} height={38} width={157} /> 
       <div className="flex flex-col pt-10 gap-6">
         {
           !!loginStore.userType && OPTIONS[loginStore.userType].map((item, index)=>{

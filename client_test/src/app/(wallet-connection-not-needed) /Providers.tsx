@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useConnect, useAccount } from "@starknet-react/core";
 import type { Connector } from "@starknet-react/core";
 import FadeLoader from "react-spinners/FadeLoader";
-import { WalletConnectorModal } from "@/components/WalletConnectModal";
 
 
 const walletIdToName = new Map([
@@ -89,7 +88,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }
           {
             currentModal === "connect" && (
-              <WalletConnectorModal />
+              <div className="bg-white rounded-lg py-6 max-w-[630px] w-full">
+                <p className="text-center text-xl font-semibold mb-7">Connect Wallet</p>
+                <div className="w-[93%] mx-auto flex flex-col gap-3">
+                  {connectors.map((connector, index) => {
+                    // const isArgentMobile = connector.id === "argentMobile";
+                    return (
+                      <div key={connector.id+"connectwalletmodal"+index} onClick={() => connect(connector)} className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
+                        <div>
+                          <p className="text-base text-center font-medium">{walletIdToName.get(connector.id) ?? connector.name}</p>
+                          {/* <p className="text-base text-center ">Powered by Agent</p> */}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
             )
           }
   
