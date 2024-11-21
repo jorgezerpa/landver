@@ -1,5 +1,8 @@
 "use client";
 import React, { useEffect } from "react";
+
+import FadeLoader from "react-spinners/FadeLoader";
+
 import { useLoginStore } from "@/store/loginStore";
  
 import { sepolia, mainnet } from "@starknet-react/chains";
@@ -54,7 +57,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
       connectors={connectors}
       explorer={voyager}
     >
-      { !loginStore.userType && <div>Loading</div> }
+      { !loginStore.userType && (
+        <div className="h-72 flex justify-center items-center">
+          <FadeLoader 
+            color="#6E62E5"
+            speedMultiplier={3}
+            radius={30}
+          />
+        </div>
+      ) }
       { loginStore.userType && children }
     </StarknetConfig>
   );

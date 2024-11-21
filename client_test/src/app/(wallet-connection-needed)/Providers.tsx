@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useConnect, useAccount } from "@starknet-react/core";
 import type { Connector } from "@starknet-react/core";
+import FadeLoader from "react-spinners/FadeLoader";
 
 
 const walletIdToName = new Map([
@@ -56,7 +57,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <div>
       {
         connecting && (
-          <div>loading</div>
+          <div className="h-72 flex justify-center items-center">
+            <FadeLoader 
+              color="#6E62E5"
+              speedMultiplier={3}
+              radius={30}
+            />
+          </div>
         )
       }
       { (!connecting&&!!address) && children }
