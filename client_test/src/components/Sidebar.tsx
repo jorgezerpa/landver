@@ -5,6 +5,7 @@ import type { Connector } from "@starknet-react/core";
 import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction, useNonceForAddress } from "@starknet-react/core";
 
 import { useRouter, usePathname } from "next/navigation";
+import { useLoginStore } from "@/store/loginStore";
 
 const OPTIONS = {
     owner: [
@@ -35,6 +36,7 @@ const OPTIONS = {
 
 
 export const Sidebar = () => {
+  const loginStore = useLoginStore()
 
   const router = useRouter()
   const pathname = usePathname()
@@ -48,7 +50,7 @@ export const Sidebar = () => {
       <Image className="cursor-pointer" alt="Landver" src={"/logo-and-name.svg"} height={38} width={157} /> 
       <div className="flex flex-col pt-10 gap-6">
         {
-          OPTIONS["client"].map((item, index)=>{
+          !!loginStore.userType && OPTIONS[loginStore.userType].map((item, index)=>{
             return (
               <div key={"sidebar-desktop-id"+index} onClick={()=>router.push(item.path)} onMouseOver={()=>setHoveredItem(index)} onMouseLeave={()=>setHoveredItem(null)} className={`rounded-md flex items-center gap-2 cursor-pointer hover:scale-95 transition-all ${pathname.includes(item.path)?"bg-[#F0EFFC]":""} py-4 px-2`}>
                 {

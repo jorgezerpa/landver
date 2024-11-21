@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
+import { useLoginStore } from "@/store/loginStore";
  
 import { sepolia, mainnet } from "@starknet-react/chains";
 import {
@@ -12,6 +13,8 @@ import {
 } from "@starknet-react/core";
  
 export function Providers({ children }: { children: React.ReactNode }) {
+  const loginStore = useLoginStore()
+
   const { connectors } = useInjectedConnectors({
     // Show these connectors if the user has no connector installed.
     recommended: [
@@ -23,6 +26,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     // Randomize the order of the connectors.
     order: "random"
   });
+
+  useEffect(()=>{
+    // ... any logic to get userType
+    setTimeout(()=>loginStore.setUserType("client"), 2000)
+  }, [])
  
   return (
     <StarknetConfig
@@ -31,7 +39,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       connectors={connectors}
       explorer={voyager}
     >
-      {children}
+      { !loginStore.userType && <div>Loading</div> }
+      { loginStore.userType && children }
     </StarknetConfig>
   );
 }
