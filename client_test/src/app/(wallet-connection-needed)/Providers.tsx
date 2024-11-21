@@ -20,7 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   const [connecting, setConnecting] = useState(true)
 
-  const [currentModal, setCurrentModal] = useState<"intro"|"connect">("intro")
+  const [currentModal, setCurrentModal] = useState<"intro"|"connect">("connect")
 
   async function connect(connector: Connector) {
     try {
