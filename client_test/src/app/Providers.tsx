@@ -6,9 +6,6 @@ import { sepolia, mainnet } from "@starknet-react/chains";
 import {
   StarknetConfig,
   publicProvider,
-  argent,
-  braavos,
-  useInjectedConnectors,
   voyager
 } from "@starknet-react/core";
 import type { Connector } from "@starknet-react/core";
@@ -20,24 +17,6 @@ import { WebWalletConnector } from "starknetkit/webwallet"
 export function Providers({ children }: { children: React.ReactNode }) {
   const loginStore = useLoginStore()
 
-  const { connectors:injectedConnectors } = useInjectedConnectors({
-    recommended: [
-      argent(),
-      braavos(),
-    ],
-    includeRecommended: "onlyIfNoConnectors",
-    order: "random"
-  });
-
-  // const connectors = [
-  //   //     ...injectedConnectors,
-  //   new InjectedConnector({ options: { id: "braavos", name: "Braavos" }}),
-  //   new InjectedConnector({ options: { id: "argentX", name: "Argent X" }}),
-  //   new WebWalletConnector({ url: "https://web.argent.xyz" }),
-  //   new ArgentMobileConnector(),
-  // ] as Connector[];
-
-  // Same as commented above, but shows Browser wallets only on browsers 
   const connectors = isInArgentMobileAppBrowser() ? [
     ArgentMobileConnector.init({
       options: {
@@ -47,7 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       },
       inAppBrowserOptions: {},
     })
-  ] as any : [
+  ] as Connector[] : [
     new InjectedConnector({ options: { id: "braavos", name: "Braavos" }}),
     new InjectedConnector({ options: { id: "argentX", name: "Argent X" }}),
     new WebWalletConnector({ url: "https://web.argent.xyz" }),
@@ -58,8 +37,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         projectId: "example-project-id",
       }
     })
-  ] as any
+  ] as Connector[]
 
+
+  
 
   useEffect(()=>{
     // setTimeout(()=>loginStore.setUserType("client"), 0)

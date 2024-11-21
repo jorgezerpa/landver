@@ -1,10 +1,8 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import type { Connector } from "@starknet-react/core";
-import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction, useNonceForAddress, useStarkProfile, useBalance } from "@starknet-react/core";
+import { useDisconnect, useAccount, useStarkProfile, useBalance } from "@starknet-react/core";
 
-import { useRouter, usePathname } from "next/navigation";
 
 import { useBlockies } from "@/hooks/useBlockies";  
 
@@ -14,21 +12,17 @@ export function shortAddress(address: string): string {
 
 export const Navbar = () => {
 
-  const router = useRouter()
-  const pathname = usePathname()
-  
   const [showUserOptions, setShowUserOptions] = useState(false)
 
   const { disconnect } = useDisconnect()
 
-  const { address, status, account } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
+  const { address } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
   const { data: starkProfile } = useStarkProfile({ address });
-  const { data, error } = useBalance({
+  const { data } = useBalance({
     address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
   });
 
   const blockieImage = useBlockies({address})
-  const nameOrShortAddress = starkProfile?.name ?? shortAddress(address || "")
   const profileImage = starkProfile?.profilePicture ?? blockieImage.blockiesImageSrc;
 
   return (
@@ -37,7 +31,7 @@ export const Navbar = () => {
         <div className="flex justify-center items-center absolute top-0 bottom-0 left-1 w-[30px]">
           <Image width={22} height={22} alt="search" src={"/icons/common/search.svg"} className="" />
         </div>
-        <input value={""} onChange={(e)=>{}} placeholder="Search..."  className="bg-gray-100 border border-none outline-none text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pl-10 " />
+        <input value={""} onChange={()=>{}} placeholder="Search..."  className="bg-gray-100 border border-none outline-none text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pl-10 " />
       </div>
       <div className="relative md:hidden flex-shrink-0">
         <div className="flex justify-center items-center w-[30px]">

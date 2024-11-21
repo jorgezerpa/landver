@@ -1,9 +1,8 @@
 'use client'
 import { useState } from "react";
 import type { Connector } from "@starknet-react/core";
-import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction } from "@starknet-react/core";
+import { useConnect, useDisconnect, useAccount,  } from "@starknet-react/core";
 
-import { ABI as LandRegistryABI } from "@/abis/LandRegistryAbi";
 import { LandList } from "@/components/LandsList";
 
 const walletIdToName = new Map([
@@ -13,14 +12,13 @@ const walletIdToName = new Map([
   ["argentMobile", "Argent mobile"],
 ]);
 
-const contractAddress = "0x5a4054a1b1389dcd48b650637977280d32f1ad8b3027bc6c7eb606bf7e28bf5";
 
 
 export default function Home() {
 
   const { connectors, connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
-  const { address, status, account,isConnected , connector } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
+  const { address, status } = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
   const [showModal, setShowModal] = useState(false)
 
   async function connect(connector: Connector) {
@@ -65,7 +63,6 @@ export default function Home() {
                 <div className="h-10"></div>
               
                 {connectors.map((connector) => {
-                const isArgentMobile = connector.id === "argentMobile";
                 return (
                   <div
                     key={connector.id}

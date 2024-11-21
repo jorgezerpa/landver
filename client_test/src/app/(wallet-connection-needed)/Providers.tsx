@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction } from "@starknet-react/core";
+import { useConnect, useAccount } from "@starknet-react/core";
 import type { Connector } from "@starknet-react/core";
 
 
@@ -14,7 +14,7 @@ const walletIdToName = new Map([
 export function Providers({ children }: { children: React.ReactNode }) {
 
   const { connectors, connectAsync } = useConnect({  });
-  const { address, status, account,isConnected , connector } = useAccount();
+  const { address, status, connector } = useAccount();
 
   const [connecting, setConnecting] = useState(true)
 
@@ -34,7 +34,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         const localStorage = window.localStorage;
         if(localStorage.getItem("landver-connector")) {
           const selectedConnector = connectors.find(con => con.id === localStorage.getItem("landver-connector"))
-          selectedConnector && await connect(selectedConnector)
+          if(selectedConnector) await connect(selectedConnector)
         }
         setConnecting(false)
       } else if (status === "connected") {
@@ -85,7 +85,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <p className="text-center text-xl font-semibold mb-7">Connect Wallet</p>
                 <div className="w-[93%] mx-auto flex flex-col gap-3">
                   {connectors.map((connector, index) => {
-                    const isArgentMobile = connector.id === "argentMobile";
+                    // const isArgentMobile = connector.id === "argentMobile";
                     return (
                       <div key={connector.id+"connectwalletmodal"+index} onClick={() => connect(connector)} className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all">
                         <div>

@@ -1,24 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useEffect, useState } from "react";
 // import Image from "next/image";
-import type { Connector } from "@starknet-react/core";
-import { useConnect, useDisconnect, useAccount, useContract, useSendTransaction, useNonceForAddress } from "@starknet-react/core";
+import { useAccount, useContract,  } from "@starknet-react/core";
 
-import { CairoOption, CairoOptionVariant, CairoEnum, AbiEnum, StarknetEnumType, getCalldata, CairoCustomEnum } from "starknet";
+import { CairoCustomEnum } from "starknet";
 
 import { ABI as LandRegistryABI } from "@/abis/LandRegistryAbi";
-import { type Address } from "@starknet-react/chains";
 
 
 const contractAddress = "0x5a4054a1b1389dcd48b650637977280d32f1ad8b3027bc6c7eb606bf7e28bf5";
 
-enum a {
-    Commercial
-}
-
-type land_use = {
-    Commercial: any;
-  };
 
 export const LandList = () => {
 
@@ -59,15 +51,12 @@ export const LandList = () => {
 
 
   const { address, status, account} = useAccount(); // status --> "connected" | "disconnected" | "connecting" | "reconnecting";
-  const { data, isLoading, isError, error, } = useNonceForAddress({
-    address: account?.address as Address,
-  });
+ 
   const { contract } = useContract({
     abi: LandRegistryABI,
     address: contractAddress,
   });
   
-
   const [lands, setLands] = useState<any[]>([])
 
   const [loadingList, setLoadingList] = useState(true)
@@ -99,10 +88,12 @@ export const LandList = () => {
                 const land = await contract.get_land(address)
                 newLands.push({ ...land, id:address, inspector_sliced:`${land.inspector}`.slice(0,4) + "..." + `${land.inspector}`.slice(-4) })
             }
+
             setLands(newLands as any)
             setLoadingList(false)
         }
       } catch (error) {
+        console.log(error)
         setLoadingList(false)
       }
     })()
@@ -111,21 +102,21 @@ export const LandList = () => {
   const addInspector = async() => {
     await contract.connect(account)
     const inspector_address = inspectorToAssign
-    const response = await contract.add_inspector(inspector_address)
+    await contract.add_inspector(inspector_address)
   }
 
   const assignInspector = async() => {
     await contract.connect(account)
     const inspector_address = inspectorToAssign
-    const response = await contract.set_land_inspector(landToAssignInspector,inspector_address)
+    await contract.set_land_inspector(landToAssignInspector,inspector_address)
   }
 
-  const removeInspector = async(inspector_id:string) => {
-    console.log(inspector_id)
-    await contract.connect(account)
-    const inspector_address = inspector_id
-    const response = await contract.remove_inspector(inspector_address)
-  }
+  // const removeInspector = async(inspector_id:string) => {
+  //   console.log(inspector_id)
+  //   await contract.connect(account)
+  //   const inspector_address = inspector_id
+  //   const response = await contract.remove_inspector(inspector_address)
+  // }
 
   const createLand = async()=>{
     try {
@@ -272,7 +263,7 @@ export const LandList = () => {
                   {
                     LandUse.map((landUse, index) => {
                       return (
-                        <option onClick={()=>setCreateLandData({ ...createLandData, landUse:index as any })}>
+                        <option key={"unique-land-item-ddfa"+index} onClick={()=>setCreateLandData({ ...createLandData, landUse:index as any })}>
                           { landUse.name }
                         </option>
                       )
@@ -294,3 +285,5 @@ export const LandList = () => {
     </div>
   );
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
