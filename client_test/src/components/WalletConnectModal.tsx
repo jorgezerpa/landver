@@ -5,7 +5,7 @@ import type { Connector } from "@starknet-react/core";
 import { useRouter } from "next/navigation";
 // import FadeLoader from "react-spinners/FadeLoader";
 import { IoMdClose } from "react-icons/io";
-
+import Image from "next/image";
 
 const walletIdToName = new Map([
   ["argentX", "Argent X"],
@@ -13,6 +13,20 @@ const walletIdToName = new Map([
   ["argentWebWallet", "Web Wallet"],
   ["argentMobile", "Argent mobile"],
 ]);
+
+const walletIcons : {
+  "braavos": string,
+  "argentX": string,
+  "argentWebWallet": string,
+  "argentMobile": string,
+} = {
+  "braavos": "/icons/wallets/braavos.svg",
+  "argentX": "/icons/wallets/argent-x.svg",
+  "argentWebWallet": "/icons/wallets/web.svg",
+  "argentMobile": "/icons/wallets/argent-x.svg",
+}
+
+
  
 export function WalletConnectorModal({setShowWalletsModal}:{ setShowWalletsModal?:(value:boolean)=>void }) {
 
@@ -59,13 +73,15 @@ export function WalletConnectorModal({setShowWalletsModal}:{ setShowWalletsModal
                 <p className="text-center text-xl font-semibold mb-7">Connect Wallet</p>
                 <div className="w-[93%] mx-auto flex flex-col gap-3">
                   {connectors.map((connector, index) => {
-                    // const isArgentMobile = connector.id === "argentMobile";
+                    
                     return (
-                      <div key={connector.id+"connectwalletmodal"+index} onClick={() => connect(connector)} className="bg-[#F2FCFA] flex justify-center items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all cursor-pointer">
+                      <div key={connector.id+"connectwalletmodal"+index} onClick={() => connect(connector)} className="bg-[#F2FCFA] px-4 flex justify-between items-center rounded-md h-[65px] w-full shrink-0 hover:scale-95 transition-all cursor-pointer">
+                        <Image src={walletIcons[connector.id as "braavos"|"argentX"|"argentWebWallet"|"argentMobile"]} alt="ether" width={25} height={25} />
                         <div>
                           <p className="text-base text-center font-medium">{walletIdToName.get(connector.id) ?? connector.name}</p>
                           {/* <p className="text-base text-center ">Powered by Agent</p> */}
                         </div>
+                        <Image src={"/icons/common/arror-up-right-with-underline.svg"} alt="ether" width={21} height={21} />
                       </div>
                     );
                   })}
