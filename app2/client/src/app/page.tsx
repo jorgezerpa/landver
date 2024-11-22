@@ -33,6 +33,7 @@ const Home = () => {
       setError("Not allowed user type."); 
       return;
     }
+    window.localStorage.setItem("user-type", userType)
     loginStore.setUserType(userType);
     router.push("/dashboard");
   };

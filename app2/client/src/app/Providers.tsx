@@ -16,9 +16,11 @@ import type { Connector } from "@starknet-react/core";
 import { InjectedConnector } from "starknetkit/injected"
 import { ArgentMobileConnector, isInArgentMobileAppBrowser } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet"
+import { useRouter } from "next/navigation";
  
 export function Providers({ children }: { children: React.ReactNode }) {
   const loginStore = useLoginStore()
+  const router = useRouter()
 
   const connectors = isInArgentMobileAppBrowser() ? [
     ArgentMobileConnector.init({
@@ -46,8 +48,27 @@ export function Providers({ children }: { children: React.ReactNode }) {
   
 
   useEffect(()=>{
-    // here try to take userType from LS or disconnect wallet and redirect to "/"
+    const localStorage = window.localStorage
+    const userType = localStorage.getItem("user-type")
+
+    if(!userType) {
+      loginStore.clearUserType()
+      localStorage.removeItem("user-type")
+      router.push("/")
+      return 
+    }
+    const allowedUserTypes = ["owner", "inspector"]
+    if (!allowedUserTypes.includes(userType)) { 
+      loginStore.clearUserType()
+      localStorage.removeItem("user-type")
+      router.push("/")
+      return 
+    }
+
+    loginStore.setUserType(userType as "owner"|"inspector")
   }, [])
+
+
  
   return (
     <StarknetConfig
@@ -56,16 +77,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
       connectors={connectors}
       explorer={voyager}
     >
-      { !loginStore.userType && (
+      {/* { !loginStore.userType && (
         <div className="h-72 flex justify-center items-center">
           <FadeLoader 
             color="#6E62E5"
-            speedMultiplier={3}
+            speedMultiplier={2}
             radius={30}
           />
         </div>
-      ) }
-      { loginStore.userType && children }
+      ) } */}
+      {/* { loginStore.userType && children } */}
+      { children }
     </StarknetConfig>
   );
 }
