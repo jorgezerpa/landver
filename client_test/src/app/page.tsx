@@ -27,16 +27,11 @@ export default function Home() {
       await connectAsync({ connector });
     } catch (error) {
       console.error(error);
+      const localStorage = window.localStorage;
+      localStorage.removeItem("landver-connector")
     }
   }
 
-  async function disconnect() {
-    try {
-      await disconnectAsync();
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   useEffect(() => {
     (async()=>{

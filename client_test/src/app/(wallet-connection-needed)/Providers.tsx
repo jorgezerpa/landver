@@ -27,6 +27,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       await connectAsync({ connector });
     } catch (error) {
       console.error(error);
+      const localStorage = window.localStorage;
+      localStorage.removeItem("landver-connector")
     }
   }
 
