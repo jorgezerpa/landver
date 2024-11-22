@@ -54,7 +54,7 @@ export const Navbar = () => {
               <div className=" p-1 m-1 md:p-1.5 md:m-1.5 bg-[#64748B] rounded-lg w-8 h-8 flex justify-center items-center flex-shrink-0">
                 <Image src={"/icons/currencies/ether.svg"} width={30} height={30} alt="ether"/>
               </div>
-              <p className="text-gray-500 font-medium text-sm md:text-base flex-shrink-0">{ data?.formatted.slice(0,4) } { data?.symbol }</p>
+              <p className="text-gray-500 font-medium text-xs sm:text-sm md:text-base flex-shrink-0">{ data?.formatted.slice(0,4) } { data?.symbol }</p>
             </div>
             <div className="bg-gray-100 p-1 md:p-2 rounded-lg flex-shrink-0">
               <div className="flex justify-center items-center flex-shrink-0">

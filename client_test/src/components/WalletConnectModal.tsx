@@ -38,7 +38,7 @@ export function WalletConnectorModal({setShowWalletsModal}:{ setShowWalletsModal
       await connectAsync({ connector });
       if(setShowWalletsModal) setShowWalletsModal(false)
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 
@@ -55,7 +55,7 @@ export function WalletConnectorModal({setShowWalletsModal}:{ setShowWalletsModal
           </div>
         )
       } */}
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-40 flex justify-center items-center" style={{ zIndex:1000 }}>
+        <div className="p-3 fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-40 flex justify-center items-center" style={{ zIndex:1000 }}>
               <div className="bg-white rounded-lg py-6 max-w-[630px] w-full relative">
                 <div
                   className="absolute top-6 right-6 cursor-pointer"
